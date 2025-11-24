@@ -11,7 +11,7 @@ class ReservationPage:
 
         # Main Frames
         self.page_header_frame = Frame(self.root)
-        self.page_header_frame.pack(fill= X, pady= 10, padx= 25)
+        self.page_header_frame.pack(fill= X, anchor= "n", pady= 10, padx= 25)
 
         self.form_frame = Frame(self.root)
         self.form_frame.pack(side= LEFT, anchor= "n", padx= 25)
@@ -34,6 +34,12 @@ class ReservationPage:
         self.order_frame.pack_propagate(False)
         self.order_frame.pack(anchor= "w", pady= 30)
 
+        self.reservation_header = Frame(self.reservation_view_frame)
+        self.reservation_header.pack(fill= X, anchor= "e")
+
+        self.reservation_frame = Frame(self.reservation_view_frame)
+        self.reservation_frame.pack()
+
         # Contents
         Label(self.page_header_frame, text= "Make a Reservation", font= ("Times", 27, "bold")).pack(side= LEFT)
 
@@ -41,7 +47,7 @@ class ReservationPage:
         date_today = datetime.now().strftime("%A, %d %B %Y")
         time_todaye = datetime.now().strftime("%I:%M %p")
 
-        Label(self.page_header_frame, text= date_today, font= ("Times", 11)).pack(anchor= "e")
+        Label(self.page_header_frame, text= date_today, font= ("Times", 12)).pack(anchor= "e")
         Label(self.page_header_frame, text= time_todaye, font= ("Times", 11)).pack(anchor= "e")
 
         # Form Section
@@ -70,8 +76,8 @@ class ReservationPage:
                                           border_width= 2)
         self.notes_entry.pack(anchor= "w", pady= (0, 25))
 
-        self.cancel_btn = Button(self.form_frame, text= "Cancel", font= ("Times", 11),
-                                 padx= 17, pady= 5,
+        self.cancel_btn = Button(self.form_frame, text= "Cancel",
+                                 relief= RIDGE, height= 2, width= 20,
                                  command= self.clearForm)
         self.cancel_btn.pack(anchor= "w")
 
@@ -91,7 +97,7 @@ class ReservationPage:
                                    relief= RIDGE)
         self.filtered_btn.pack(side= RIGHT, pady= (0, 5), padx= 10)
 
-        self.add_icon = PhotoImage(file= "add.png")
+        self.add_icon = PhotoImage(file="icons/add.png")
 
         # Advanced Order Button
         Label(self.order_frame, text= "Advanced Order", font= ("Times", 12), bg= "white").pack(pady= 10)
@@ -106,8 +112,12 @@ class ReservationPage:
         self.view_order_mode = False
 
         # Calls the Reservation view
-        Label(self.reservation_view_frame, text= "Reservation Made Today", font= ("Times", 12)).pack(anchor= "w", pady= (0, 12))
-        self.createReservationTree(self.reservation_view_frame)
+        Label(self.reservation_header, text= "Reservation Made Today", font= ("Times", 12)).pack(anchor= "w", pady= (0, 12))
+        self.createReservationTree(self.reservation_frame)
+
+        self.add_btn = Button(self.reservation_view_frame, text= "Add Reservation",
+                              relief= RIDGE, height= 2, width= 20)
+        self.add_btn.pack(anchor= "e", pady= (25, 0))
 
     def orderWindow(self):
         self.order_window = Toplevel(self.root)
@@ -140,7 +150,7 @@ class ReservationPage:
         scrollbar.pack(side= RIGHT, fill= Y)     
 
     def createReservationTree(self, parent):
-        self.reservation_tree = ttk.Treeview(parent, columns= ("Table Number", "Capacity", "Status"), show= "tree headings", height= 25) 
+        self.reservation_tree = ttk.Treeview(parent, columns= ("Table Number", "Capacity", "Status"), show= "tree headings", height= 27) 
         self.reservation_tree.heading("#0", text= "Time")
         self.reservation_tree.heading("Table Number", text= "Table Number")
         self.reservation_tree.heading("Capacity", text= "Capacity")
