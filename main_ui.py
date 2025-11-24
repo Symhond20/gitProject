@@ -1,35 +1,45 @@
 from tkinter import * 
-from reservation_page import ReservationPage, ViewReservationPage
-from tkinter import ttk
+from reservation_page import ReservationPage
 
 window = Tk()
-window.geometry("1500x900")
+window.geometry("1800x800")
 window.title("Restaurant Ordering System")
 
 class SidebarMenu:
     def __init__(self, root):
         self.root = root
         
-        # Load Icons
-        self.dashboard_icon = PhotoImage(file="icons/dashboard.png")
-        self.order_icon = PhotoImage(file="icons/order.png")
-        self.reservation_icon = PhotoImage(file="icons/reservation.png")
-        self.report_icon = PhotoImage(file="icons/report.png")
-        self.foodMenu_icon = PhotoImage(file="icons/menu-food.png")
-        self.logout_icon = PhotoImage(file="icons/logout.png")
+        # Loads Icon: handles the error
+        try:
+            self.dashboard_icon = PhotoImage(file="icons/dashboard.png")
+            self.order_icon = PhotoImage(file="icons/order.png")
+            self.reservation_icon = PhotoImage(file="icons/reservation.png")
+            self.report_icon = PhotoImage(file="icons/report.png")
+            self.foodMenu_icon = PhotoImage(file="icons/menu-food.png")
+            self.logout_icon = PhotoImage(file="icons/logout.png")
+        except Exception as e:
+            print(f"Warning: Icon loading failed: {e}")
+            self.dashboard_icon = None
+            self.order_icon = None
+            self.reservation_icon = None
+            self.report_icon = None
+            self.foodMenu_icon = None
+            self.logout_icon = None
 
-
-        # ------------- Main frames ---------------
+        # Main frames
         self.sidebar_frame = Frame(self.root, bg='#D9D9D9')
         self.sidebar_frame.pack(side= LEFT, fill= Y)
 
         self.page_frame = Frame(self.root, bg='#D9D9D9')
         self.page_frame.pack(side= LEFT, fill= Y, padx= 30, pady= 10, anchor= "center")
-        # ------------------------------------------
 
-        
+        #try:
+            #HomePage(self.page_frame)
+        #except Exception as e:
+            #print(f"Error: Loading HomaPage: {e}")
+
         # Side bar buttons
-        self.dashboard_btn = Button(self.sidebar_frame, image=self.dashboard_icon, text="Dashboard", 
+        self.dashboard_btn = Button(self.sidebar_frame, image=self.dashboard_icon, text="Home Page", 
                                     font=('Helvetica', 10), bd= 0, bg="#DADADA",
                                     compound="left", anchor= "w", padx= 20,
                                     command=self.homePage)
@@ -45,7 +55,7 @@ class SidebarMenu:
         self.reservation_btn_frame = Frame(self.sidebar_frame, bg="#DADADA")
         self.reservation_btn_frame.pack(fill=X, anchor="w")
 
-        # Reservation subframe
+        # Reservation subframe (hidden)
         self.reservation_btn_subframe = Frame(self.reservation_btn_frame, bg="#DADADA")
 
         self.reservation_btn = Button(self.reservation_btn_frame, image=self.reservation_icon, text="Reservation", 
@@ -69,7 +79,7 @@ class SidebarMenu:
         self.order_btn_frame = Frame(self.sidebar_frame, bg="#DADADA")
         self.order_btn_frame.pack(fill=X, anchor="w")
 
-        # Order button subframe
+        # Order button subframe (hidden)
         self.order_btn_subframe = Frame(self.order_btn_frame, bg="#DADADA")
 
         self.order_btn = Button(self.order_btn_frame, image=self.order_icon, text="Order", 
@@ -106,13 +116,19 @@ class SidebarMenu:
         for widgets in self.page_frame.winfo_children():
             widgets.destroy()
 
-        
+        #try:
+            #HomePage(self.page_frame)
+        #except Exception as e:
+            #print(f"Error: Loading HomaPage: {e}")
 
     def customerPage(self):
         for widgets in self.page_frame.winfo_children():
             widgets.destroy()
-
-      
+        
+        #try:
+            #CustomerPage(self.page_frame)
+        #except Exception as e:
+            #print(f"Error: Loading HomaPage: {e}")
 
     def reservationOnClick(self):
         if self.order_btn_subframe.winfo_viewable():
@@ -130,39 +146,20 @@ class SidebarMenu:
     def addReservationPage(self):
         for widgets in self.page_frame.winfo_children():
             widgets.destroy()
-
-        ReservationPage(self.page_frame)
+        try:
+            ReservationPage(self.page_frame)
+        except Exception as e:
+            print(f"Error: Loading HomaPage: {e}")
 
     def viewReservationPage(self):
         for widgets in self.page_frame.winfo_children():
             widgets.destroy()
-        
-        ViewReservationPage(self.page_frame)
-    def tableManagerPage(self):
-        for widgets in self.page_frame.winfo_children():
-            widgets.destroy()
-        # Title
-        Label(self.page_frame, text="Table Manager", font=('Helvetica', 16, 'bold'), bg='#D9D9D9').pack(pady=10)
-        # Create Treeview for displaying tables
-        columns = ('ID', 'Table Number', 'Capacity', 'Status', 'Description')
-        tree = ttk.Treeview(self.page_frame, columns=columns, show='headings', height=20)
-        
-        # Define column headings
-        tree.heading('ID', text='ID')
-        tree.heading('Table Number', text='Table Number')
-        tree.heading('Capacity', text='Capacity')
-        tree.heading('Status', text='Status')
-        tree.heading('Description', text='Description')
-        
-        # Define column widths
-        tree.column('ID', width=50, anchor='center')
-        tree.column('Table Number', width=100, anchor='center')
-        tree.column('Capacity', width=80, anchor='center')
-        tree.column('Status', width=100, anchor='center')
-        tree.column('Description', width=300, anchor='w')
-        
-        # Fetch and insert data
 
+        #try:
+            #ViewReservationPage(self.page_frame)
+        #except Exception as e:
+            #print(f"Error: Loading HomaPage: {e}")
+    
     def orderOnClick(self):
         if self.reservation_btn_subframe.winfo_viewable():
             self.reservation_btn_subframe.pack_forget()
@@ -180,7 +177,10 @@ class SidebarMenu:
         for widgets in self.page_frame.winfo_children():
             widgets.destroy()
 
-        
+        #try:
+            #OrderPage(self.page_frame)
+        #except Exception as e:
+            #print(f"Error: Loading HomaPage: {e}")
 
     def paymentPage(self):
         for widgets in self.page_frame.winfo_children():
@@ -192,7 +192,10 @@ class SidebarMenu:
         for widgets in self.page_frame.winfo_children():
             widgets.destroy()
 
-        
+        #try:
+            #MenuPage(self.page_frame)
+        #except Exception as e:
+            #print(f"Error: Loading HomaPage: {e}")
 
     def reportPage(self):
         for widgets in self.page_frame.winfo_children():

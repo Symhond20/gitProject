@@ -11,7 +11,7 @@ class ReservationPage:
 
         # Main Frames
         self.page_header_frame = Frame(self.root)
-        self.page_header_frame.pack(fill= X, anchor= "n", pady= 10, padx= 25)
+        self.page_header_frame.pack(fill= X, pady= 10, padx= 25)
 
         self.form_frame = Frame(self.root)
         self.form_frame.pack(side= LEFT, anchor= "n", padx= 25)
@@ -70,8 +70,9 @@ class ReservationPage:
                                           border_width= 2)
         self.notes_entry.pack(anchor= "w", pady= (0, 25))
 
-        self.cancel_btn = ctk.CTkButton(self.form_frame, text= "Cancel",
-                                        command= self.clearForm)
+        self.cancel_btn = Button(self.form_frame, text= "Cancel", font= ("Times", 11),
+                                 padx= 17, pady= 5,
+                                 command= self.clearForm)
         self.cancel_btn.pack(anchor= "w")
 
         # Calls the Table View
@@ -90,7 +91,7 @@ class ReservationPage:
                                    relief= RIDGE)
         self.filtered_btn.pack(side= RIGHT, pady= (0, 5), padx= 10)
 
-        self.add_icon = PhotoImage(file="icons/add.png")
+        self.add_icon = PhotoImage(file= "add.png")
 
         # Advanced Order Button
         Label(self.order_frame, text= "Advanced Order", font= ("Times", 12), bg= "white").pack(pady= 10)
@@ -145,10 +146,10 @@ class ReservationPage:
         self.reservation_tree.heading("Capacity", text= "Capacity")
         self.reservation_tree.heading("Status", text= "Status")
 
-        self.reservation_tree.column("#0", width= 100)
+        self.reservation_tree.column("#0", width= 140)
         self.reservation_tree.column("Table Number", width= 120)
         self.reservation_tree.column("Capacity", width= 100)
-        self.reservation_tree.column("Status", width= 100)
+        self.reservation_tree.column("Status", width= 140)
         self.reservation_tree.pack(side= LEFT, fill= BOTH, expand= TRUE)
 
         scrollbar = ttk.Scrollbar(parent, orient= "vertical", command= self.reservation_tree.yview)
