@@ -5,10 +5,7 @@ from tkinter import ttk
 
 ctk.set_appearance_mode("light")
 
-window = Tk()
-window.geometry("1700x800")
-
-class MakeReservation:
+class ReservationPage:
     def __init__(self, root):
         self.root = root
 
@@ -157,8 +154,3 @@ class MakeReservation:
         scrollbar = ttk.Scrollbar(parent, orient= "vertical", command= self.reservation_tree.yview)
         self.reservation_tree.config(yscrollcommand= scrollbar.set)
         scrollbar.pack(side= RIGHT, fill= Y)     
-
-
-        
-MakeReservation(window)
-window.mainloop()
