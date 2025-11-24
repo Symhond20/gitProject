@@ -21,6 +21,7 @@ class SystemDB:
     
     def createTables(self):
         try:
+            #Table for RestoTable
             self.cursor.execute('''CREATE TABLE IF NOT EXISTS restaurant_table(
                                 table_id INT PRIMARY KEY AUTO_INCREMENT,
                                 table_number VARCHAR(10) NOT NULL UNIQUE,
@@ -28,7 +29,7 @@ class SystemDB:
                                 table_status VARCHAR(20) NOT NULL DEFAULT 'available',
                                 description TEXT
                                 )''')
-            
+            #Reservation Table
             self.cursor.execute('''CREATE TABLE IF NOT EXISTS reservations(
                                 reservation_id INT PRIMARY KEY AUTO_INCREMENT,
                                 guest_name VARCHAR(150) NOT NULL,
@@ -43,7 +44,38 @@ class SystemDB:
                                 booking_date DATE NOT NULL DEFAULT (CURRENT_DATE),
                                 FOREIGN KEY (table_id) REFERENCES restaurant_table(table_id)
                                 )''')
-            self.insertTableData()
+            
+            #Cuisine Table
+            self.cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS Cuisines (
+                        id INT PRIMARY KEY AUTO_INCREMENT,
+                        name VARCHAR(100) NOT NULL UNIQUE
+                    ) 
+                """)
+
+            # Courses Table
+            self.cursor.execute("""
+                CREATE TABLE IF NOT EXISTS Courses (
+                    id INT PRIMARY KEY AUTO_INCREMENT,
+                    name VARCHAR(100) NOT NULL UNIQUE
+                    ) 
+                """)
+
+            # Meals Table
+            self.cursor.execute("""
+                CREATE TABLE IF NOT EXISTS Meals (
+                        id INT PRIMARY KEY AUTO_INCREMENT,
+                        name VARCHAR(255) NOT NULL,
+                        description TEXT,
+                        price DECIMAL(10,2) NOT NULL,
+                        Status TINYINT(1) NOT NULL DEFAULT 1,
+                        prepTime INT NOT NULL,
+                        cuisineID INT NOT NULL,
+                        courseID INT NOT NULL,
+                        FOREIGN KEY (cuisineID) REFERENCES Cuisines(id),
+                        FOREIGN KEY (courseID) REFERENCES Courses(id) 
+                    ) 
+                """)
             
             self.connection.commit()
             print("Table is successfully created.")
