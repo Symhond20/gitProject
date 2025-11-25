@@ -8,7 +8,7 @@ ctk.set_appearance_mode("light")
 class ReservationPage:
     def __init__(self, root):
         self.root = root
-
+        
         # Main Frames
         self.page_header_frame = Frame(self.root)
         self.page_header_frame.pack(fill= X, anchor= "n", pady= 10, padx= 25)
