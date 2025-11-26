@@ -81,7 +81,7 @@ class ReservationPage:
         self.cancel_btn.pack(anchor= "w")
 
         Label(self.table_header, text= "Selected Table:", font= ("Times", 11)).pack(side= LEFT, anchor= "w", pady= (0, 5))
-        self.table_entry = ctk.CTkEntry(self.table_header, width= 40, corner_radius= 3)
+        self.table_entry = ctk.CTkEntry(self.table_header, width= 40, corner_radius= 3, state="readonly")
         self.table_entry.pack(side= LEFT, anchor= "w", pady= (0, 7), padx= 10)
 
          # Calls the Table View
@@ -132,6 +132,8 @@ class ReservationPage:
         self.time_entry.delete(0, END)
         self.guest_count_entry.delete(0, END)
         self.notes_entry.delete("1.0", END)
+        self.table_entry.configure(state="normal")
+        self.table_entry.delete(0,END)
     
     def creatTableTree(self, parent):
         self.table_tree = ttk.Treeview(parent, columns= ("Capacity", "Status", "Time"), show= "tree headings", height= 20)

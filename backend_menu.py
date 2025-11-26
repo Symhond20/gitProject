@@ -76,25 +76,8 @@ class MenuCreation:
             return f"Error updating meal: {e}"
 
 
-    # Delete Meal
-    def delete(self, id):
-        try:
-            db_conn.cursor.execute("DELETE FROM Meals WHERE id = %s", (id,))
-            db_conn.connection.commit()
 
-            db_conn.cursor.execute("SELECT COUNT(*) FROM Meals")
-            count = db_conn.cursor.fetchone()[0]
-
-        # If empty, reset auto-increment
-            if count == 0:
-                db_conn.cursor.execute("ALTER TABLE Meals AUTO_INCREMENT = 1")
-                db_conn.connection.commit()
-
-            return "Meal deleted successfully!"
-        except:
-            return f"Error deleting meal"
-
-    def fetch_all(self, table_name):
+    def fetch_all(self,table_name):
         try:
             db_conn.cursor.execute(f"SELECT id, name FROM {table_name}")
             return db_conn.cursor.fetchall()

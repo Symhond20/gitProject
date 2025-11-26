@@ -3,7 +3,8 @@ from reservation_page import ReservationPage
 from menu_gui import MenuGui
 
 window = Tk()
-window.geometry("1700x800")
+window.geometry("1500x800")
+
 window.title("Restaurant Ordering System")
 
 class SidebarMenu:
