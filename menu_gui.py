@@ -10,34 +10,32 @@ class MenuGui:
     def __init__(self, root):
         self.root = root
         self.menu = MenuCreation()
+
+        self.search_icon = PhotoImage(file="icons/search.png")
         
         # Main Frames
-        self.header_frame = Frame(self.root, bg=  "#3c5070")
-        self.header_frame.pack(fill= X, anchor= "n", pady= 10, padx= 25)
+        self.header_frame = Frame(self.root)
+        self.header_frame.pack(fill= X, anchor= "n", pady= 10, padx= 10)
         
-        self.menu_form_frame = Frame(self.root)
-        self.menu_form_frame.pack(side = LEFT, anchor="n",padx=25,pady=30)
+        self.features_frame = Frame(self.root)
+        self.features_frame.pack(fill= X, padx= 10, pady= 10)
+
+        self.menu_form_frame = Frame(self.root, bg= "white")
+        self.menu_form_frame.pack(side = LEFT, anchor="n", padx=10)
         
-        self.menu_frame = Frame(self.root)
-        self.menu_frame.pack(side= LEFT, anchor= "n", padx= 20, fill=BOTH)
+        self.menu_tree_frame = Frame(self.root)
+        self.menu_tree_frame.pack(side= LEFT, anchor= "n", padx= 10)
 
-        # Table frame sub frames
-        self.table_header = Frame(self.menu_frame)
-        self.table_header.pack(pady=5,fill=X)
+        # Feature frame contents
+        self.search_entry = ctk.CTkEntry(self.features_frame, width= 250, placeholder_text= "Search by name", border_color= "#DADADA", height= 30)
+        self.search_entry.pack(side=LEFT)
+        self.search_btn = Button(self.features_frame, image= self.search_icon, bd= 0)
+        self.search_btn.pack(side= LEFT, padx= 10)
 
-        self.menu_tree_frame = Frame(self.menu_frame)
-        self.menu_tree_frame.pack()
-
-        self.frame_controls = Frame(self.table_header)
-        self.frame_controls.pack(side=RIGHT, anchor="e")
-
-        self.left_filter = Frame(self.table_header)
-        self.left_filter.pack(side=LEFT, anchor="w")
-
-        Label(self.header_frame, text="Menu Management", font=("Times", 27, "bold"),  bg=  "#3c5070",fg= "#f5f0e9").pack(side=LEFT)
-
-        Label(self.header_frame, text=datetime.now().strftime("%A, %d %B %Y"), font=("Times", 12,"bold"),  bg=  "#3c5070",fg= "#f5f0e9").pack(anchor="e") 
-        Label(self.header_frame, text=datetime.now().strftime("%I:%M %p"), font=("Times", 12,"bold"),  bg=  "#3c5070",fg= "#f5f0e9").pack(anchor="e")
+        # Header frame contents
+        Label(self.header_frame, text="Menu Management", font=("Times", 27, "bold")).pack(side= LEFT)
+        Label(self.header_frame, text=datetime.now().strftime("%A, %d %B %Y"), font=("Times", 12)).pack(anchor= "e") 
+        Label(self.header_frame, text=datetime.now().strftime("%I:%M %p"), font=("Times", 11)).pack(anchor= "e")
 
         # Menu Form Frame contents
         Label(self.menu_form_frame, text="Dish name:", font=("Times", 12)).pack(anchor="w")
@@ -45,16 +43,15 @@ class MenuGui:
         self.name_entry.pack(anchor="w", pady=(0, 25))
 
         Label(self.menu_form_frame, text="Description:", font=("Times", 12)).pack(anchor="w")
-        self.desc_entry = ctk.CTkTextbox(self.menu_form_frame, width= 260,height= 100, corner_radius= 3,
-                                          border_width= 2)
-        self.desc_entry.pack(anchor= "w", pady= (0, 25))
+        self.description_entry = ctk.CTkTextbox(self.menu_form_frame, width= 260, height= 100, corner_radius= 3, border_width= 2)
+        self.description_entry.pack(anchor= "w", pady= (0, 25))
 
         Label(self.menu_form_frame, text="Price:", font=("Times", 12)).pack(anchor="w")
-        self.price_entry = ctk.CTkEntry(self.menu_form_frame,placeholder_text="Enter price...", width=260)
+        self.price_entry = ctk.CTkEntry(self.menu_form_frame, placeholder_text="Enter price...", width=260)
         self.price_entry.pack(anchor="w", pady=(0, 25))
 
         # Dropdown menu for Cuisines
-        Label(self.menu_form_frame, text="Cuisine:", font=("Times", 12)).pack(anchor="w")
+        Label(self.menu_form_frame, text="Select Cuisine:", font=("Times", 12)).pack(anchor="w")
         cuisines = self.menu.get_cuisines()
         if isinstance(cuisines, str):
             messagebox.showerror("Error", cuisines)
@@ -64,10 +61,10 @@ class MenuGui:
             for c in cuisines:
                 cuisine_names.append(c[1])
         self.cuisine_combo = ttk.Combobox(self.menu_form_frame, values=cuisine_names, width=27,state="readonly")
-        self.cuisine_combo.pack(anchor="w", pady=5)
+        self.cuisine_combo.pack(anchor="w", pady=(0, 25))
 
-        # Dropdown menu for Category
-        Label(self.menu_form_frame, text="Category:", font=("Times", 12)).pack(anchor="w")
+        # Dropdown menu for Courses
+        Label(self.menu_form_frame, text="Select Category:", font=("Times", 12)).pack(anchor="w")
         categories = self.menu.get_categories()
         if isinstance(categories, str):
             messagebox.showerror("Error", categories)
@@ -77,25 +74,22 @@ class MenuGui:
             for cat in categories:
                 cat_names.append(cat[1])
         self.cat_combo = ttk.Combobox(self.menu_form_frame, values=cat_names, width=27,state="readonly")
-        self.cat_combo.pack(anchor="w", pady=5)
+        self.cat_combo.pack(anchor="w",  pady=(0, 25))
 
         Label(self.menu_form_frame, text="Preparation Time (minutes):").pack(anchor="w", pady=5)
         self.prep_entry = ctk.CTkEntry(self.menu_form_frame,placeholder_text="Enter prepartion time...", width=260)
-        self.prep_entry.pack(anchor="w", pady=5)
-        # Buttons --------------------------------    
+        self.prep_entry.pack(anchor="w", pady=(0, 25))
+   
         # Add and cancel btn
-        self.add_btn = Button(self.menu_form_frame, text="Add",font=("Times",10), bg="#2DD145", foreground="#0B0B0B",height= 1, width= 10, relief= RIDGE,command=self.add_meal)
-        self.add_btn.pack(side=LEFT, padx=5, pady=20)
-        self.cancel_btn = Button(self.menu_form_frame, text="Cancel",font=("Times",10), bg="#E61111", foreground="#0D0D0D",height= 1, width= 10, relief= RIDGE)
-        self.cancel_btn.pack(side=RIGHT , padx=5, pady=20)
+        self.add_btn = Button(self.menu_form_frame, text="Add", font=("Times",10), height= 1, width= 10, relief= RIDGE, command=self.add_meal)
+        self.add_btn.pack(side=LEFT, padx=5, pady=(25, 0))
 
-        # update btn
-        self.update_btn= Button(self.frame_controls, text="Update", width=10, bg="#2DE749", foreground="#1C1A1A",command=self.open_update_window)
-        self.update_btn.pack(side='left', padx=10, )
-        #-----------------------------------------
+        self.cancel_btn = Button(self.menu_form_frame, text="Cancel", font=("Times",10), height= 1, width= 10, relief= RIDGE, command= self.clear_form)
+        self.cancel_btn.pack(side=RIGHT , padx=5,  pady=(25, 0))
+
         self.creatTableTree(self.menu_tree_frame)
         
-        Label(self.left_filter,text="Filter by Category:").pack(side=LEFT, padx=5)
+        Label(self.features_frame,text="Filter by Category:").pack(side=RIGHT, padx=5)
         category_names_filter = ["All"]
         cat_ids = [None]
 
@@ -103,13 +97,16 @@ class MenuGui:
              for cat_id, cat_name in categories:
                 category_names_filter.append(cat_name)
                 cat_ids.append(cat_id)
-        self.cat_combo_filter = ttk.Combobox(self.left_filter, values=category_names_filter, state="readonly", width=20)
+        self.cat_combo_filter = ttk.Combobox(self.features_frame, values=category_names_filter, state="readonly", width=20)
         self.cat_combo_filter.set("All")
-        self.cat_combo_filter.pack(side=LEFT, padx=5)
+        self.cat_combo_filter.pack(side=RIGHT, padx=5)
         self.cat_combo_filter.bind("<<ComboboxSelected>>", self.filter_menu)
 
-        self.displayAll()
+        self.update_btn= Button(self.features_frame, text="Update", width=10, command=self.open_update_window)
+        self.update_btn.pack(side= RIGHT, padx=10)
 
+        self.displayAll()
+ 
     def creatTableTree(self,parent): #Done
         columns = ("Name", "Price", "Availability", "Preparation Time", "Category", "Cuisine")
         self.table_tree = ttk.Treeview(parent, columns = columns, show="tree headings", height= 30)
@@ -122,13 +119,13 @@ class MenuGui:
         self.table_tree.heading("Cuisine", text= "Cusine")
         
 
-        self.table_tree.column("#0",  width= 50)
+        self.table_tree.column("#0",  width= 100)
         self.table_tree.column("Name",width= 150,anchor="center")
-        self.table_tree.column("Price", width= 100,anchor="center")
-        self.table_tree.column("Availability", width= 140,anchor="center")
-        self.table_tree.column("Preparation Time", width= 140,anchor="center")
-        self.table_tree.column("Category", width= 140,anchor="center")
-        self.table_tree.column("Cuisine", width= 140,anchor="center")
+        self.table_tree.column("Price", width= 150,anchor="center")
+        self.table_tree.column("Availability", width= 150,anchor="center")
+        self.table_tree.column("Preparation Time", width= 150,anchor="center")
+        self.table_tree.column("Category", width= 150,anchor="center")
+        self.table_tree.column("Cuisine", width= 150,anchor="center")
         self.table_tree.pack(side= LEFT, fill= Y, expand= TRUE)
 
         scrollbar = ttk.Scrollbar(parent, orient= "vertical", command= self.table_tree.yview)
@@ -136,7 +133,6 @@ class MenuGui:
         scrollbar.pack(side= RIGHT, fill= Y) 
         self.table_tree.bind("<<TreeviewSelect>>", self.selectedRow)
        
-
     def selectedRow(self, event): #Done
         selected_data = self.table_tree.selection()
         if not selected_data:
@@ -168,7 +164,7 @@ class MenuGui:
 
             parent = self.table_tree.insert("", END, iid=str(meal_id),text= meal_id,values=(name, f"₱ {price}", avail_text, f"{prep_time} mins", category_name, cuisine_name))
             self.table_tree.insert(parent, END,values=("", description,"", "", "", "", ""))
-    #Filtering process
+    
     def filter_menu(self, event=None):
         selected_category_name = self.cat_combo_filter.get()
         if selected_category_name == "All":
@@ -185,12 +181,11 @@ class MenuGui:
 
     def add_meal(self):
         name = self.name_entry.get().strip()
-        description = self.desc_entry.get("1.0", "end").strip() 
+        description = self.description_entry.get("1.0", "end").strip() 
         price = self.price_entry.get().strip()
         cuisine_name = self.cuisine_combo.get()
         cat_name = self.cat_combo.get()
         prep = self.prep_entry.get().strip()
-
         
         if not name or not price or not cuisine_name or not cat_name or not description:
             messagebox.showerror("Error", "Name, Price, Description, Cuisine, and Category are required.")
@@ -283,11 +278,11 @@ class MenuGui:
             update_win.destroy()
             self.displayAll()
         Button(frame, text="Save",bg="#10F000",fg="#ECF1EE", command=save_update, width=10).pack(pady=10)
-    # Clear 
+   
     def clear_form(self):
         self.name_entry.delete(0, END)
         self.price_entry.delete(0, END)
         self.prep_entry.delete(0, END)
-        self.desc_entry.delete("1.0", "end")
+        self.description_entry.delete("1.0", "end")
         self.cuisine_combo.set("")
         self.cat_combo.set("")
