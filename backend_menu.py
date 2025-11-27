@@ -51,8 +51,6 @@ class MenuCreation:
             db_conn.cursor.execute(query, params)
             return db_conn.cursor.fetchall()
 
-        
-
     # Update Meal
     def update(self, meal_id, price=None, status=None):
         try:
@@ -75,9 +73,7 @@ class MenuCreation:
         except Exception as e:
             return f"Error updating meal: {e}"
 
-
-
-    def fetch_all(self,table_name):
+    def fetch_all(self, table_name):
         try:
             db_conn.cursor.execute(f"SELECT id, name FROM {table_name}")
             return db_conn.cursor.fetchall()

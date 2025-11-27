@@ -12,18 +12,14 @@ class ReservationPage:
         self.table_manager = TableManager()
         self.reservation_manager = ReservationManager()
 
-        self.style = ttk.Style()
-        self.style.configure("Treeview", font= ("", 9))
-        self.style.configure("Treeview.Heading", font= ("Times", 10, "bold"))
-
         self.add_icon = PhotoImage(file="icons/add.png")
         
         # Main Frames
-        self.page_header_frame = Frame(self.root, bg=  "#3c5070")
-        self.page_header_frame.pack(fill= X, anchor= "n", pady= 10, padx= 25)
+        self.page_header_frame = Frame(self.root)
+        self.page_header_frame.pack(fill= X, anchor= "n", pady= 10, padx= 10)
 
         self.form_frame = Frame(self.root, bg= "white")
-        self.form_frame.pack(side= LEFT, anchor= "n", padx= 25)
+        self.form_frame.pack(side= LEFT, anchor= "n", padx= 10)
 
         self.table_view_frame = Frame(self.root, bg= "white")
         self.table_view_frame.pack(side= LEFT, anchor= "n", padx= 10)
@@ -49,9 +45,9 @@ class ReservationPage:
         self.reservation_frame.pack()
 
         # Contents
-        Label(self.page_header_frame, text= "Make a Reservation", font= ("Times", 27, "bold"), bg=  "#3c5070", fg= "#f5f0e9").pack(side= LEFT)
-        Label(self.page_header_frame, text= datetime.now().strftime("%A, %d %B %Y"), font= ("Times", 12), bg=  "#3c5070", fg= "#f5f0e9").pack(anchor= "e")
-        Label(self.page_header_frame, text= datetime.now().strftime("%I:%M %p"), font= ("Times", 11), bg=  "#3c5070", fg= "#f5f0e9").pack(anchor= "e")
+        Label(self.page_header_frame, text= "Make a Reservation", font= ("Times", 27, "bold")).pack(side= LEFT)
+        Label(self.page_header_frame, text= datetime.now().strftime("%A, %d %B %Y"), font= ("Times", 12)).pack(anchor= "e")
+        Label(self.page_header_frame, text= datetime.now().strftime("%I:%M %p"), font= ("Times", 11)).pack(anchor= "e")
 
         # Form Section
         Label(self.form_frame, text= "Full Name:", font= ("Times", 11)).pack(anchor= "w")
@@ -87,6 +83,7 @@ class ReservationPage:
 
          # Calls the Table View
         self.creatTableTreeview(self.table_frame)
+        self.root.bind("<Button-1>", self.deselectTableTree)
 
         # Table frame buttons
         self.show_btn = Button(self.table_header, text= "Show Tables", height= 1, width= 10, relief= RAISED, command= self.showAllTable)
@@ -109,6 +106,7 @@ class ReservationPage:
         
         # Calls the Reservation view
         self.createReservationTreeview(self.reservation_frame)
+        self.root.bind("<Button-1>", self.deselectTableTree)
 
         self.add_btn = Button(self.reservation_view_frame, text= "Add Reservation", height= 1, width= 20, relief= RAISED, command= self.submitReservation)
         self.add_btn.pack(anchor= "e", pady= (25, 0))
@@ -123,6 +121,10 @@ class ReservationPage:
         self.order_window = Toplevel(self.root)
         self.order_window.geometry("400x300")
         self.order_window.title("Advanced Order")
+
+        self.main_frame = Frame(self.order_window)
+        self.main_frame.pack()
+        Label(self.main_frame, text= "Choose Type of Cuisine").pack()
     
     def clearForm(self): # Done
         self.name_entry.delete(0, 'end')
@@ -163,11 +165,11 @@ class ReservationPage:
         self.reservation_tree.heading("Guest Count", text= "Guest Count")
         self.reservation_tree.heading("Reservation Status", text= "Reservation Status")
 
-        self.reservation_tree.column("Reservation ID", width= 130, anchor= "center")
-        self.reservation_tree.column("Selected Time", width= 130, anchor= "center")
-        self.reservation_tree.column("Table Number", width= 120, anchor= "center")
+        self.reservation_tree.column("Reservation ID", width= 100, anchor= "center")
+        self.reservation_tree.column("Selected Time", width= 100, anchor= "center")
+        self.reservation_tree.column("Table Number", width= 100, anchor= "center")
         self.reservation_tree.column("Guest Count", width= 100, anchor= "center")
-        self.reservation_tree.column("Reservation Status", width= 130, anchor= "center")
+        self.reservation_tree.column("Reservation Status", width= 100, anchor= "center")
         self.reservation_tree.pack(side= LEFT, fill= BOTH, expand= True)
 
         yscrollbar = ttk.Scrollbar(tree_frame, orient= "vertical", command= self.reservation_tree.yview)
@@ -198,6 +200,15 @@ class ReservationPage:
             self.table_entry.configure(state= "readonly")
         else:
             self.table_tree.selection_remove(item)
+
+    def deselectTableTree(self, event): # Done
+        if event.widget != self.table_tree:
+            self.table_tree.selection_remove(self.table_tree.selection())
+            for item in self.table_tree.get_children():
+                self.table_tree.item(item, open= False)
+        
+        if event.widget != self.reservation_tree:
+            self.reservation_tree.selection_remove(self.reservation_tree.selection()) 
 
     def showAllTable(self, date=None): # Done
         for item in self.table_tree.get_children():
