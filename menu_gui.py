@@ -11,52 +11,50 @@ class MenuGui:
         self.root = root
         self.menu = MenuCreation()
         
-        # ---------------- Main Frames ----------------
-        # Header frame at the top of the window
+        # Main Frames
         self.header_frame = Frame(self.root, bg=  "#3c5070")
         self.header_frame.pack(fill= X, anchor= "n", pady= 10, padx= 25)
         
-        # Left-side form frame for input fields
-        self.form_frame = Frame(self.root)
-        self.form_frame.pack(side = LEFT, anchor="n",padx=25,pady=30)
+        self.menu_form_frame = Frame(self.root)
+        self.menu_form_frame.pack(side = LEFT, anchor="n",padx=25,pady=30)
         
-        # Right-side frame for table display
-        self.table_frame = Frame(self.root)
-        self.table_frame.pack(side= LEFT, anchor= "n", padx= 20,fill=BOTH)
+        self.menu_frame = Frame(self.root)
+        self.menu_frame.pack(side= LEFT, anchor= "n", padx= 20, fill=BOTH)
 
-        # Table header section (for filters and controls)
-        self.table_header = Frame(self.table_frame)
+        # Table frame sub frames
+        self.table_header = Frame(self.menu_frame)
         self.table_header.pack(pady=5,fill=X)
 
-        frame_controls = Frame(self.table_header)
-        frame_controls.pack(side=RIGHT, anchor="e")
+        self.menu_tree_frame = Frame(self.menu_frame)
+        self.menu_tree_frame.pack()
 
-        left_filter = Frame(self.table_header)
-        left_filter.pack(side=LEFT, anchor="w")
+        self.frame_controls = Frame(self.table_header)
+        self.frame_controls.pack(side=RIGHT, anchor="e")
 
-        Label(self.header_frame, text="Menu Management", font=("Times", 30, "bold"),  bg=  "#3c5070",fg= "#f5f0e9").pack(side=LEFT)
-        current_date = datetime.now().strftime("%A, %d %B %Y")
-        current_time = datetime.now().strftime("%I:%M %p")
-        Label(self.header_frame, text=current_date, font=("Times", 12,"bold"),  bg=  "#3c5070",fg= "#f5f0e9").pack(anchor="e") 
-        Label(self.header_frame, text=current_time, font=("Times", 12,"bold"),  bg=  "#3c5070",fg= "#f5f0e9").pack(anchor="e")
-              
-       
-        # Forms -------------------------------------------------------------
-        Label(self.form_frame, text="Dish name:", font=("Times", 12)).pack(anchor="w")
-        self.name_entry = ctk.CTkEntry(self.form_frame,placeholder_text="Enter name...", width=260)  
+        self.left_filter = Frame(self.table_header)
+        self.left_filter.pack(side=LEFT, anchor="w")
+
+        Label(self.header_frame, text="Menu Management", font=("Times", 27, "bold"),  bg=  "#3c5070",fg= "#f5f0e9").pack(side=LEFT)
+
+        Label(self.header_frame, text=datetime.now().strftime("%A, %d %B %Y"), font=("Times", 12,"bold"),  bg=  "#3c5070",fg= "#f5f0e9").pack(anchor="e") 
+        Label(self.header_frame, text=datetime.now().strftime("%I:%M %p"), font=("Times", 12,"bold"),  bg=  "#3c5070",fg= "#f5f0e9").pack(anchor="e")
+
+        # Menu Form Frame contents
+        Label(self.menu_form_frame, text="Dish name:", font=("Times", 12)).pack(anchor="w")
+        self.name_entry = ctk.CTkEntry(self.menu_form_frame,placeholder_text="Enter name...", width=260)  
         self.name_entry.pack(anchor="w", pady=(0, 25))
 
-        Label(self.form_frame, text="Description:", font=("Times", 12)).pack(anchor="w")
-        self.desc_entry = ctk.CTkTextbox(self.form_frame, width= 260,height= 100, corner_radius= 3,
+        Label(self.menu_form_frame, text="Description:", font=("Times", 12)).pack(anchor="w")
+        self.desc_entry = ctk.CTkTextbox(self.menu_form_frame, width= 260,height= 100, corner_radius= 3,
                                           border_width= 2)
         self.desc_entry.pack(anchor= "w", pady= (0, 25))
 
-        Label(self.form_frame, text="Price:", font=("Times", 12)).pack(anchor="w")
-        self.price_entry = ctk.CTkEntry(self.form_frame,placeholder_text="Enter price...", width=260)
+        Label(self.menu_form_frame, text="Price:", font=("Times", 12)).pack(anchor="w")
+        self.price_entry = ctk.CTkEntry(self.menu_form_frame,placeholder_text="Enter price...", width=260)
         self.price_entry.pack(anchor="w", pady=(0, 25))
 
         # Dropdown menu for Cuisines
-        Label(self.form_frame, text="Cuisine:", font=("Times", 12)).pack(anchor="w")
+        Label(self.menu_form_frame, text="Cuisine:", font=("Times", 12)).pack(anchor="w")
         cuisines = self.menu.get_cuisines()
         if isinstance(cuisines, str):
             messagebox.showerror("Error", cuisines)
@@ -65,11 +63,11 @@ class MenuGui:
             cuisine_names = []
             for c in cuisines:
                 cuisine_names.append(c[1])
-        self.cuisine_combo = ttk.Combobox(self.form_frame, values=cuisine_names, width=27,state="readonly")
+        self.cuisine_combo = ttk.Combobox(self.menu_form_frame, values=cuisine_names, width=27,state="readonly")
         self.cuisine_combo.pack(anchor="w", pady=5)
 
         # Dropdown menu for Category
-        Label(self.form_frame, text="Category:", font=("Times", 12)).pack(anchor="w")
+        Label(self.menu_form_frame, text="Category:", font=("Times", 12)).pack(anchor="w")
         categories = self.menu.get_categories()
         if isinstance(categories, str):
             messagebox.showerror("Error", categories)
@@ -78,26 +76,26 @@ class MenuGui:
             cat_names = []
             for cat in categories:
                 cat_names.append(cat[1])
-        self.cat_combo = ttk.Combobox(self.form_frame, values=cat_names, width=27,state="readonly")
+        self.cat_combo = ttk.Combobox(self.menu_form_frame, values=cat_names, width=27,state="readonly")
         self.cat_combo.pack(anchor="w", pady=5)
 
-        Label(self.form_frame, text="Preparation Time (minutes):").pack(anchor="w", pady=5)
-        self.prep_entry = ctk.CTkEntry(self.form_frame,placeholder_text="Enter prepartion time...", width=260)
+        Label(self.menu_form_frame, text="Preparation Time (minutes):").pack(anchor="w", pady=5)
+        self.prep_entry = ctk.CTkEntry(self.menu_form_frame,placeholder_text="Enter prepartion time...", width=260)
         self.prep_entry.pack(anchor="w", pady=5)
         # Buttons --------------------------------    
         # Add and cancel btn
-        self.add_btn = Button(self.form_frame, text="Add",font=("Times",10), bg="#2DD145", foreground="#0B0B0B",height= 1, width= 10, relief= RIDGE,command=self.add_meal)
+        self.add_btn = Button(self.menu_form_frame, text="Add",font=("Times",10), bg="#2DD145", foreground="#0B0B0B",height= 1, width= 10, relief= RIDGE,command=self.add_meal)
         self.add_btn.pack(side=LEFT, padx=5, pady=20)
-        self.cancel_btn = Button(self.form_frame, text="Cancel",font=("Times",10), bg="#E61111", foreground="#0D0D0D",height= 1, width= 10, relief= RIDGE)
+        self.cancel_btn = Button(self.menu_form_frame, text="Cancel",font=("Times",10), bg="#E61111", foreground="#0D0D0D",height= 1, width= 10, relief= RIDGE)
         self.cancel_btn.pack(side=RIGHT , padx=5, pady=20)
 
         # update btn
-        self.update_btn= Button(frame_controls, text="Update", width=10, bg="#2DE749", foreground="#1C1A1A",command=self.open_update_window)
+        self.update_btn= Button(self.frame_controls, text="Update", width=10, bg="#2DE749", foreground="#1C1A1A",command=self.open_update_window)
         self.update_btn.pack(side='left', padx=10, )
         #-----------------------------------------
-        self.creatTableTree(self.table_frame)
+        self.creatTableTree(self.menu_tree_frame)
         
-        Label(left_filter,text="Filter by Category:").pack(side=LEFT, padx=5)
+        Label(self.left_filter,text="Filter by Category:").pack(side=LEFT, padx=5)
         category_names_filter = ["All"]
         cat_ids = [None]
 
@@ -105,7 +103,7 @@ class MenuGui:
              for cat_id, cat_name in categories:
                 category_names_filter.append(cat_name)
                 cat_ids.append(cat_id)
-        self.cat_combo_filter = ttk.Combobox(left_filter, values=category_names_filter, state="readonly", width=20)
+        self.cat_combo_filter = ttk.Combobox(self.left_filter, values=category_names_filter, state="readonly", width=20)
         self.cat_combo_filter.set("All")
         self.cat_combo_filter.pack(side=LEFT, padx=5)
         self.cat_combo_filter.bind("<<ComboboxSelected>>", self.filter_menu)
@@ -154,8 +152,6 @@ class MenuGui:
             self.table_tree.item(item, open= TRUE)
         else:
             self.table_tree.selection_remove(item)
-
-
         
     def displayAll(self, course_id=None):
         for item in self.table_tree.get_children():
@@ -172,7 +168,6 @@ class MenuGui:
 
             parent = self.table_tree.insert("", END, iid=str(meal_id),text= meal_id,values=(name, f"₱ {price}", avail_text, f"{prep_time} mins", category_name, cuisine_name))
             self.table_tree.insert(parent, END,values=("", description,"", "", "", "", ""))
-    
     #Filtering process
     def filter_menu(self, event=None):
         selected_category_name = self.cat_combo_filter.get()

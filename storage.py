@@ -9,8 +9,7 @@ class SystemDB:
             self.connection = mysql.connector.connect(
                 host = "127.0.0.1",
                 user = "root",
-                database = my_db
-            )
+                database = my_db)
             
             if self.connection.is_connected():
                 print("Successfully connected to MySQL database")
@@ -27,9 +26,7 @@ class SystemDB:
                                 table_number VARCHAR(10) NOT NULL UNIQUE,
                                 capacity INT NOT NULL,
                                 table_status VARCHAR(20) NOT NULL DEFAULT 'available',
-                                description TEXT
-                                )''')
-            
+                                description TEXT)''')       
             # Reservation Table
             self.cursor.execute('''CREATE TABLE IF NOT EXISTS reservations(
                                 reservation_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -47,21 +44,14 @@ class SystemDB:
                                 )''')
             
             # Cuisine Table
-            self.cursor.execute("""
-                    CREATE TABLE IF NOT EXISTS Cuisines (
-                        id INT PRIMARY KEY AUTO_INCREMENT,
-                        name VARCHAR(100) NOT NULL UNIQUE
-                    ) 
-                """)
+            self.cursor.execute(""" CREATE TABLE IF NOT EXISTS Cuisines(
+                                id INT PRIMARY KEY AUTO_INCREMENT,
+                                name VARCHAR(100) NOT NULL UNIQUE)""")
 
             # Courses Table
-            self.cursor.execute("""
-                CREATE TABLE IF NOT EXISTS Courses (
-                    id INT PRIMARY KEY AUTO_INCREMENT,
-                    name VARCHAR(100) NOT NULL UNIQUE
-                    ) 
-                """)
-
+            self.cursor.execute("""CREATE TABLE IF NOT EXISTS Courses(
+                                id INT PRIMARY KEY AUTO_INCREMENT, 
+                                name VARCHAR(100) NOT NULL UNIQUE)""")
             # Meals Table
             self.cursor.execute("""
                 CREATE TABLE IF NOT EXISTS Meals (
@@ -104,7 +94,7 @@ class SystemDB:
         except Exception as e:
             print(f"Table creation error: {e}.")
 
-    def insertTableData(self):
+    def insertTableData(self): # Done
         
         tables = [('T1', 2, 'Indoor and near entrance'), ('T2', 2, 'Indoor and near entrance'), ('T3', 2, 'Indoor and near entrance'), 
                   ('T4', 2, 'Indoor and Intimate'), ('T5', 2, 'Indoor and Intimate'), 
@@ -126,8 +116,29 @@ class SystemDB:
             if not result:
                 self.cursor.execute("INSERT INTO restaurant_table(table_number, capacity, description) VALUES(%s,%s,%s)", (table_num, capacity, description,))
         self.connection.commit()
-    
-    def closeDB(self):
+
+    def insertCuisine(self): # Done
+        cuisines = ["Japanes Cuisine", "Italian Cuisine", "Filipino Cuisine"]
+        for cuisine in cuisines:
+            self.cursor.execute("SELECT * FROM Cuisines WHERE name = %s", (cuisine,))
+            result = self.cursor.fetchall()
+
+            if not result:
+                self.cursor.execute("INSERT INTO Cuisines(name) VALUES(%s)", (cuisine,))
+        self.connection.commit()
+
+    def insertCourses(self): # Done
+        courses = ["Appetizers", "Main Dish", "Dessert", "Drinks"]
+
+        for course in courses:
+            self.cursor.execute("SELECT * FROM Courses WHERE name = %s", (course,))
+            result = self.cursor.fetchall()
+
+            if not result:
+                self.cursor.execute("INSERT INTO Courses(name) VALUES(%s)", (course,))
+        self.connection.commit()
+
+    def closeDB(self): # Done
         try:
             if self.cursor is not None:
                 self.cursor.close()
@@ -138,5 +149,5 @@ class SystemDB:
         except:
             print("Database Error: Can't close the connection.")
 
-SystemDB()
-
+app = SystemDB()
+app.insertCourses()
