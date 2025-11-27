@@ -10,6 +10,7 @@ class Manager(ABC):
     def viewAll(self, date):
         pass
 
+    @abstractmethod
     def changeStatus(self, new_status):
         pass
 
@@ -109,6 +110,65 @@ class ReservationManager(Manager):
         self._storage.cursor.execute("SELECT * FROM reservations WHERE reservation_status != 'deleted'")
         result = self._storage.cursor.fetchall()
         return result
+
+    def searchReservation(self, name): # Done
+        self._storage.cursor.execute('''SELECT reservations.reservation_id, reservations.guest_name, reservations.contact_number, 
+                                     reservations.selected_date, reservations.selected_time, 
+                                     reservations.guest_count, restaurant_table.table_number, 
+                                     reservations.reservation_status, reservations.booking_date, reservations.cancelled_at
+                                     FROM reservations INNER JOIN restaurant_table ON reservations.table_id = restaurant_table.table_id WHERE reservations.reservation_status != 'deleted' AND reservations.guest_name LIKE %s''', 
+                                  ("%" + name + "%",))
+        result = self._storage.cursor.fetchall()
+        return result
+    
+    def removeReservation(self, reservation_id): # Done
+        try:
+            self._storage.cursor.execute("SELECT reservation_status FROM reservations WHERE reservation_id = %s", (reservation_id,))
+            result = self._storage.cursor.fetchone()
+            
+            if not result:
+                return "Reservation not found."
+            if result == 'deleted':
+                return "Reservation is already deleted."
+            
+            self._storage.cursor.execute("UPDATE reservations SET reservation_status = 'deleted' WHERE reservation_id = %s", (reservation_id,))
+            self._storage.connection.commit()
+            return "success"
+        
+        except Exception as e:
+            self._storage.connection.rollback()         
+            print(f"Error deleting reservation {reservation_id}: {str(e)}") 
+            return "An error occurred while deleting the reservation. Please try again."
+
+    def cancelReservation(self, reservation_id): # Done
+        try:
+            self._storage.cursor.execute("UPDATE reservations SET reservation_status = 'cancelled', cancelled_at = CURRENT_TIMESTAMP WHERE reservation_id = %s", (reservation_id,))
+            self._storage.connection.commit()
+            return "success"
+        except Exception as e:
+            self._storage.connection.rollback()
+            return str(e)    
+
+    def viewReservationByDate(self): # Done
+        self._storage.cursor.execute("SELECT * FROM reservations WHERE reservation_status != 'deleted' ORDER BY selected_date DESC")
+        result = self._storage.cursor.fetchall()
+        return result
+    
+    def viewReservationByTime(self): # Done
+        self._storage.cursor.execute("SELECT * FROM reservations WHERE reservation_status != 'deleted' ORDER BY selected_time ASC")
+        result = self._storage.cursor.fetchall()
+        return result
+    
+    def viewReservationByName(self): # Done
+        self._storage.cursor.execute("SELECT * FROM reservations WHERE reservation_status != 'deleted' ORDER BY guest_name ASC")
+        result = self._storage.cursor.fetchall()
+        return result
+    
+    def viewCancelledReservations(self): # Done
+        self._storage.cursor.execute("SELECT * FROM reservations WHERE reservation_status = 'cancelled'")
+        result = self._storage.cursor.fetchall()
+        return result
+    
 
     def changeStatus(self, new_status):
         pass

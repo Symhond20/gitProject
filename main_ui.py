@@ -1,5 +1,6 @@
 from tkinter import * 
 from reservation_page import ReservationPage
+from reservation_list import  ViewReservationPage
 from menu_gui import MenuGui
 
 window = Tk()
@@ -157,10 +158,10 @@ class SidebarMenu:
         for widgets in self.page_frame.winfo_children():
             widgets.destroy()
 
-        #try:
-            #ViewReservationPage(self.page_frame)
-        #except Exception as e:
-            #print(f"Error: Loading HomaPage: {e}")
+        try:
+            ViewReservationPage(self.page_frame)
+        except Exception as e:
+            print(f"Error: Loading HomaPage: {e}")
     
     def orderOnClick(self):
         if self.reservation_btn_subframe.winfo_viewable():
