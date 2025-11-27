@@ -11,46 +11,47 @@ class ReservationPage:
         self.root = root
         self.table_manager = TableManager()
         self.reservation_manager = ReservationManager()
+
+        self.style = ttk.Style()
+        self.style.configure("Treeview", font= ("", 9))
+        self.style.configure("Treeview.Heading", font= ("Times", 10, "bold"))
+
+        self.add_icon = PhotoImage(file="icons/add.png")
         
         # Main Frames
         self.page_header_frame = Frame(self.root, bg=  "#3c5070")
         self.page_header_frame.pack(fill= X, anchor= "n", pady= 10, padx= 25)
 
-        self.form_frame = Frame(self.root)
+        self.form_frame = Frame(self.root, bg= "white")
         self.form_frame.pack(side= LEFT, anchor= "n", padx= 25)
 
-        self.table_view_frame = Frame(self.root)
+        self.table_view_frame = Frame(self.root, bg= "white")
         self.table_view_frame.pack(side= LEFT, anchor= "n", padx= 10)
 
-        self.reservation_view_frame = Frame(self.root)
+        self.reservation_view_frame = Frame(self.root, bg= "white")
         self.reservation_view_frame.pack(side= LEFT, anchor= "n", padx= 10)
 
         # Sub Frames
-        self.table_header = Frame(self.table_view_frame)
+        self.table_header = Frame(self.table_view_frame, bg= "white")
         self.table_header.pack(fill= X, anchor= "e")
 
-        self.table_frame = Frame(self.table_view_frame)
+        self.table_frame = Frame(self.table_view_frame, bg= "white")
         self.table_frame.pack()
 
         self.order_frame = Frame(self.table_view_frame, width= 440, height= 700, bg= "white", highlightbackground= "gray", highlightthickness= 2)
         self.order_frame.pack_propagate(False)
         self.order_frame.pack(anchor= "w", pady= 30)
 
-        self.reservation_header = Frame(self.reservation_view_frame)
+        self.reservation_header = Frame(self.reservation_view_frame, bg= "white")
         self.reservation_header.pack(fill= X, anchor= "e")
 
-        self.reservation_frame = Frame(self.reservation_view_frame)
+        self.reservation_frame = Frame(self.reservation_view_frame, bg= "white")
         self.reservation_frame.pack()
 
         # Contents
         Label(self.page_header_frame, text= "Make a Reservation", font= ("Times", 27, "bold"), bg=  "#3c5070", fg= "#f5f0e9").pack(side= LEFT)
-
-        # Gets the current date
-        date_today = datetime.now().strftime("%A, %d %B %Y")
-        time_todaye = datetime.now().strftime("%I:%M %p")
-
-        Label(self.page_header_frame, text= date_today, font= ("Times", 12), bg=  "#3c5070", fg= "#f5f0e9").pack(anchor= "e")
-        Label(self.page_header_frame, text= time_todaye, font= ("Times", 11), bg=  "#3c5070", fg= "#f5f0e9").pack(anchor= "e")
+        Label(self.page_header_frame, text= datetime.now().strftime("%A, %d %B %Y"), font= ("Times", 12), bg=  "#3c5070", fg= "#f5f0e9").pack(anchor= "e")
+        Label(self.page_header_frame, text= datetime.now().strftime("%I:%M %p"), font= ("Times", 11), bg=  "#3c5070", fg= "#f5f0e9").pack(anchor= "e")
 
         # Form Section
         Label(self.form_frame, text= "Full Name:", font= ("Times", 11)).pack(anchor= "w")
@@ -85,16 +86,14 @@ class ReservationPage:
         self.table_entry.pack(side= LEFT, anchor= "w", pady= (0, 7), padx= 10)
 
          # Calls the Table View
-        self.creatTableTree(self.table_frame)
+        self.creatTableTreeview(self.table_frame)
 
         # Table frame buttons
-        self.all_btn = Button(self.table_header, text= "Show Tables", height= 1, width= 10, relief= RAISED, command= self.showAll)
-        self.all_btn.pack(side= RIGHT, pady= (0, 5), padx= (10, 15))
+        self.show_btn = Button(self.table_header, text= "Show Tables", height= 1, width= 10, relief= RAISED, command= self.showAllTable)
+        self.show_btn.pack(side= RIGHT, pady= (0, 5), padx= (10, 15))
 
-        self.filtered_btn = Button(self.table_header, text= "Filter Tables", height= 1, width= 10, relief= RAISED, command= self.showFiltered)
-        self.filtered_btn.pack(side= RIGHT, pady= (0, 5), padx= 10)
-
-        self.add_icon = PhotoImage(file="icons/add.png")
+        self.filter_btn = Button(self.table_header, text= "Filter Tables", height= 1, width= 10, relief= RAISED, command= self.showFilteredTable)
+        self.filter_btn.pack(side= RIGHT, pady= (0, 5), padx= 10)
 
         # Advanced Order Button
         Label(self.order_frame, text= "Advanced Order", font= ("Times", 12), bg= "white").pack(pady= 10)
@@ -106,37 +105,38 @@ class ReservationPage:
         self.order_summary = None
         self.view_order_mode = False
 
-        Label(self.reservation_header, text= "Reservation Made Today", font= ("Times", 12)).pack(anchor= "w", pady= (0, 12))
+        Label(self.reservation_header, text= "Current Reservations Today", font= ("Times", 12)).pack(anchor= "w", pady= (0, 12))
         
         # Calls the Reservation view
-        self.createReservationTree(self.reservation_frame)
-
-        self.table_tree.bind("<<TreeviewSelect>>", self.selectedRow)
+        self.createReservationTreeview(self.reservation_frame)
 
         self.add_btn = Button(self.reservation_view_frame, text= "Add Reservation", height= 1, width= 20, relief= RAISED, command= self.submitReservation)
         self.add_btn.pack(anchor= "e", pady= (25, 0))
 
         # Uses the curreny date
-        self.showAll()
-        self.showCurrentReservations()
+        self.showAllTable()
+        self.showCurrentReservation()
 
-    def orderWindow(self):
+        self.table_tree.bind("<<TreeviewSelect>>", self.selectedRow)
+
+    def orderWindow(self): 
         self.order_window = Toplevel(self.root)
         self.order_window.geometry("400x300")
         self.order_window.title("Advanced Order")
     
-    def clearForm(self):
-        self.name_entry.delete(0, END)
-        self.contact_entry.delete(0, END)
-        self.date_entry.delete(0, END)
-        self.time_entry.delete(0, END)
-        self.guest_count_entry.delete(0, END)
-        self.notes_entry.delete("1.0", END)
+    def clearForm(self): # Done
+        self.name_entry.delete(0, 'end')
+        self.contact_entry.delete(0, 'end')
+        self.date_entry.delete(0, 'end')
+        self.time_entry.delete(0, 'end')
+        self.guest_count_entry.delete(0, 'end')
+        self.notes_entry.delete("1.0", 'end')
         self.table_entry.configure(state="normal")
-        self.table_entry.delete(0,END)
+        self.table_entry.delete(0, 'end')
+        self.table_entry.configure(state="readonly")
     
-    def creatTableTree(self, parent):
-        self.table_tree = ttk.Treeview(parent, columns= ("Capacity", "Status", "Time"), show= "tree headings", height= 20)
+    def creatTableTreeview(self, parent): # Done
+        self.table_tree = ttk.Treeview(parent, columns= ("Capacity", "Status", "Time"), show= "tree headings", height= 20, selectmode= "browse")
         self.table_tree.heading("#0", text= "Table Number")
         self.table_tree.heading("Capacity", text= "Capacity")
         self.table_tree.heading("Status", text= "Status")
@@ -152,24 +152,33 @@ class ReservationPage:
         self.table_tree.config(yscrollcommand= scrollbar.set)
         scrollbar.pack(side= RIGHT, fill= Y)     
 
-    def createReservationTree(self, parent):
-        self.reservation_tree = ttk.Treeview(parent, columns= ("Selected Time", "Table Number", "Guest Count", "Reservation Status"), show= "headings", height= 27) 
+    def createReservationTreeview(self, parent): # Done
+        tree_frame = Frame(parent)
+        tree_frame.pack(fill= BOTH, expand= True)
+
+        self.reservation_tree = ttk.Treeview(tree_frame, columns= ("Reservation ID", "Selected Time", "Table Number", "Guest Count", "Reservation Status"), show= "headings", height= 27) 
+        self.reservation_tree.heading("Reservation ID", text= "Reservation ID")
         self.reservation_tree.heading("Selected Time", text= "Selected Time")
         self.reservation_tree.heading("Table Number", text= "Table Number")
         self.reservation_tree.heading("Guest Count", text= "Guest Count")
         self.reservation_tree.heading("Reservation Status", text= "Reservation Status")
 
-        self.reservation_tree.column("Selected Time", width= 140, anchor= "center")
+        self.reservation_tree.column("Reservation ID", width= 130, anchor= "center")
+        self.reservation_tree.column("Selected Time", width= 130, anchor= "center")
         self.reservation_tree.column("Table Number", width= 120, anchor= "center")
         self.reservation_tree.column("Guest Count", width= 100, anchor= "center")
-        self.reservation_tree.column("Reservation Status", width= 140, anchor= "center")
-        self.reservation_tree.pack(side= LEFT, fill= BOTH, expand= TRUE, anchor= "center")
+        self.reservation_tree.column("Reservation Status", width= 130, anchor= "center")
+        self.reservation_tree.pack(side= LEFT, fill= BOTH, expand= True)
 
-        scrollbar = ttk.Scrollbar(parent, orient= "vertical", command= self.reservation_tree.yview)
-        self.reservation_tree.config(yscrollcommand= scrollbar.set)
-        scrollbar.pack(side= RIGHT, fill= Y)     
+        yscrollbar = ttk.Scrollbar(tree_frame, orient= "vertical", command= self.reservation_tree.yview)
+        yscrollbar.pack(side= RIGHT, fill= Y)   
+        self.reservation_tree.config(yscrollcommand= yscrollbar.set)
 
-    def selectedRow(self, event):
+        xscrollbar = ttk.Scrollbar(parent, orient= "horizontal", command= self.reservation_tree.xview)
+        xscrollbar.pack(side= BOTTOM, fill= X)   
+        self.reservation_tree.config(xscrollcommand= xscrollbar.set)
+
+    def selectedRow(self, event): # Done
         selected_data = self.table_tree.selection()
         if not selected_data:
             return
@@ -190,7 +199,7 @@ class ReservationPage:
         else:
             self.table_tree.selection_remove(item)
 
-    def showAll(self, date=None):
+    def showAllTable(self, date=None): # Done
         for item in self.table_tree.get_children():
             self.table_tree.delete(item)
 
@@ -208,13 +217,13 @@ class ReservationPage:
                 except Exception:
                     display_time = str(time)
             else:
-                display_time = "-"
+                display_time = "N/A"
             
             status_display = "reserved" if time else "available"
-            parent = self.table_tree.insert("", END, iid= str(id), text= table_number, values= (capacity, status_display, display_time))
-            self.table_tree.insert(parent, END, text= description, values= ("","",""))
+            parent = self.table_tree.insert("", "end", iid= str(id), text= table_number, values= (capacity, status_display, display_time))
+            self.table_tree.insert(parent, "end", text= description, values= ("","",""))
 
-    def showFiltered(self):
+    def showFilteredTable(self): # Done
         try:
             date = self.date_entry.get().strip()
             guest = self.guest_count_entry.get()
@@ -258,7 +267,7 @@ class ReservationPage:
             parent = self.table_tree.insert("", "end", iid= str(table_id), text= table_num, values= (capacity, status_display, display_time))
             self.table_tree.insert(parent, "end", text= f" Description: {description}", values= ("", "", ""))
 
-    def submitReservation(self):
+    def submitReservation(self): # Done
         name = self.name_entry.get().title() 
         contact = self.contact_entry.get()
         date = self.date_entry.get()
@@ -270,49 +279,90 @@ class ReservationPage:
         if not name or not contact or not date or not time or not guest_count or not table_number:
             messagebox.showwarning("Input Error", "Please fill up required entries.")
             return
+        
+        # Checks the guest count
         try:
-            guest_count_int = int(guest_count)
+            guest_count_int = int(guest_count) # Converts guest count to integer
             if guest_count_int <= 0:
                 messagebox.showwarning("Input Error", "Please enter valid input guest count (no zero and negative number).")
                 return
         except ValueError:
-            messagebox.showwarning("Input Error", "Please enter valid guest count.")
+            messagebox.showwarning("Input Error", "Please enter valid guest count (numeric characters only).")
+            return
+        # Checks the contact nunmber
+        if not contact.isdigit():
+            messagebox.showwarning("Input Error", "Contact number must oonly contain numeric chracters.")
             return
 
+        if len(contact) != 11:
+            messagebox.showwarning("Input Error", "Contact number must be 11 digits and numeric only (e.g., 09122919463)")
+            return
+        if not contact.startswith('09'):
+            messagebox.showwarning("Input Error", "Contact must start with '09', (e.g., 09122919463)")
+            return
+        # checks the contact number 
+        try:
+            contact_number = int(contact)
+        except ValueError:
+            messagebox.showwarning("Input Error", "Invalid contact number format.")
+        # Checks the date format
         try:
             datetime.strptime(date, "%Y-%m-%d")
         except ValueError:
             messagebox.showwarning("Invalid Date Format", "Plaese enter a valid date format YYYY-MM-DD.") 
             return
-        
+        # Checks the time format    
         try:
-            datetime.strptime(time, "%H:%M %p")
+            input_time = datetime.strptime(time, "%I:%M %p").time() # If the format is not like this 
         except ValueError:
-            messagebox.showwarning("Invalid Time Format", "Plaese enter a valid time format HH:MM AM/PM.") 
+            messagebox.showwarning("Invalid Time Format", "Plaese enter a valid time format HH:MM AM/PM (e.g., 9:00 AM)") 
             return
         
-        result = self.reservation_manager.addReservation(name, contact, date, time, guest_count, notes, table_number)
+        input_hour = input_time.hour
+        input_minute = input_time.minute
+        opening_hour = 8
+        opening_minute = 0
+        cutoff_hour = 22
+        cutoff_minute = 0
+
+        if (input_hour < opening_hour) or (input_hour == opening_hour and input_minute < opening_minute):
+            messagebox.showwarning("Input Error", "Reservations are not allowed before 8:00 AM (opening time).")
+            return
+        if input_hour == 0 and input_minute == 0:
+            messagebox.showwarning("Input Error", "Reservations cannot be made for 12:00 AM (midnight). Please select a different time.")
+            return
+        if (input_hour > cutoff_hour) or (input_hour == cutoff_hour and input_minute >= cutoff_minute):
+            messagebox.showwarning("Input Error", "Reservations are not allowed after or at 10:00 PM (closing time is 11:00 PM).")
+            return
+        
+        time_24h = input_time.strftime("%H:%M")
+
+        result = self.reservation_manager.addReservation(name, contact, date, time_24h, guest_count, notes, table_number)
 
         if result == "success":
             messagebox.showinfo("Success", "Reservation is successfully added.")
             self.table_tree.selection_remove(self.table_tree.selection())
             self.clearForm()
-            self.showAll()
-            self.showCurrentReservations()
+            self.showAllTable()
+            self.showCurrentReservation()
         elif result == 'empty_fields':
             messagebox.showwarning("Input Error", "Fill in all required fields.")
         elif result == "already_exists":
             messagebox.showerror('Duplicate Error', "A reservtion with the same details already exists.")
         else:
+            print(f"Debug {result}")
             messagebox.showerror("Error", "An unexpected error occurred.")
         
-    def showCurrentReservations(self):
+    def showCurrentReservation(self, date=""): # Done
         for item in self.reservation_tree.get_children():
             self.reservation_tree.delete(item)
 
-        reservations = self.reservation_manager.viewAll()
+        if date == "":
+            date = datetime.now().strftime("%Y-%m-%d")
 
-        for time, table_num, guest_count, status  in reservations:
+        reservations = self.reservation_manager.viewInfo(date)
+
+        for reservation_id, time, table_num, guest_count, status  in reservations:
             if time:
                 try:
                     formatted_time = datetime.strptime(str(time), "%H:%M:%S")
@@ -322,4 +372,4 @@ class ReservationPage:
             else:
                 display_time = "N/A"
             
-            self.reservation_tree.insert("", "end", values=(display_time, table_num, guest_count, status))
+            self.reservation_tree.insert("", "end", values=(reservation_id, display_time, table_num, guest_count, status))

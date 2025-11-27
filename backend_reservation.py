@@ -17,7 +17,7 @@ class TableManager(Manager):
     def __init__(self):
         super().__init__()
 
-    def viewAll(self, date):
+    def viewAll(self, date): # Done
         self._storage.cursor.execute('''SELECT restaurant_table.table_id, restaurant_table.table_number, restaurant_table.capacity, restaurant_table.table_status, reservations.selected_time, restaurant_table.description 
                                   FROM restaurant_table 
                                   LEFT JOIN reservations 
@@ -26,7 +26,7 @@ class TableManager(Manager):
         result = self._storage.cursor.fetchall()
         return result
 
-    def viewFilteredTable(self, date, guest_count):
+    def viewFilteredTable(self, date, guest_count): # Done
         self._storage.cursor.execute('''SELECT restaurant_table.table_id, restaurant_table.table_number, restaurant_table.capacity, 
                                      restaurant_table.description, restaurant_table.table_status,
                                      reservations.selected_time
@@ -36,7 +36,7 @@ class TableManager(Manager):
         result = self._storage.cursor.fetchall()
         return result
     
-    def changeStatus(self, new_status, table_id):
+    def changeStatus(self, new_status, table_id): # Done
         try:
             self._storage.cursor.execute("UPDATE restaurant_table SET table_status = %s WHERE table_id = %s", (new_status, table_id))
             self._storage.connection.commit()
@@ -50,14 +50,14 @@ class ReservationManager(Manager):
     def __init__(self):
         super().__init__()
 
-    def addReservation(self, name, contact, date, time, guest_count, notes, table_number):
+    def addReservation(self, name, contact, date, time, guest_count, notes, table_number): # Done
         if not name or not contact or not date or not time or not guest_count or not table_number:
             return "empty_fields"
         
         # Validates the date and time input
         try:
             datetime.strptime(date, '%Y-%m-%d')
-            datetime.strptime(time, '%H:%M %p')
+            datetime.strptime(time, '%H:%M')
         except ValueError:
             return "Invalid_format"
         
@@ -91,18 +91,22 @@ class ReservationManager(Manager):
 
             table_manager = TableManager()
             status_update = table_manager.changeStatus(table_id, 'reserved')
+
             if status_update == "error":
                 return "error_updating_status"
             return "success"
 
         else:
             return "already_exists"
+        
+    def viewInfo(self, date=""): # Done
+        self._storage.cursor.execute("SELECT reservations.reservation_id, reservations.selected_time, restaurant_table.table_number, reservations.guest_count, reservations.reservation_status FROM reservations INNER JOIN restaurant_table ON reservations.table_id = restaurant_table.table_id WHERE reservations.booking_date = %s AND reservation_status != 'deleted'", (date,))
+        
+        result = self._storage.cursor.fetchall()
+        return result
     
-    def viewAll(self, date=""):
-        if date:
-            self._storage.cursor.execute("SELECT reservations.selected_time, restaurant_table.table_number, reservations.guest_count, reservations.reservation_status FROM reservations INNER JOIN restaurant_table ON reservations.table_id = restaurant_table.table_id WHERE reservations.selected_date = %s", (date,))
-        else:
-            self._storage.cursor.execute("SELECT reservations.selected_time, restaurant_table.table_number, reservations.guest_count, reservations.reservation_status FROM reservations INNER JOIN restaurant_table ON reservations.table_id = restaurant_table.table_id")
+    def viewAll(self, date=""): # Done
+        self._storage.cursor.execute("SELECT * FROM reservations WHERE reservation_status != 'deleted'")
         result = self._storage.cursor.fetchall()
         return result
 

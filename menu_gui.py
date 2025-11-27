@@ -4,7 +4,6 @@ from tkinter import messagebox, ttk
 from backend_menu import MenuCreation  
 from datetime import datetime
 
-
 ctk.set_appearance_mode("light")
 
 class MenuGui:

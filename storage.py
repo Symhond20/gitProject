@@ -21,7 +21,7 @@ class SystemDB:
     
     def createTables(self):
         try:
-            #Table for RestoTable
+            # Table for RestoTable
             self.cursor.execute('''CREATE TABLE IF NOT EXISTS restaurant_table(
                                 table_id INT PRIMARY KEY AUTO_INCREMENT,
                                 table_number VARCHAR(10) NOT NULL UNIQUE,
@@ -29,7 +29,8 @@ class SystemDB:
                                 table_status VARCHAR(20) NOT NULL DEFAULT 'available',
                                 description TEXT
                                 )''')
-            #Reservation Table
+            
+            # Reservation Table
             self.cursor.execute('''CREATE TABLE IF NOT EXISTS reservations(
                                 reservation_id INT PRIMARY KEY AUTO_INCREMENT,
                                 guest_name VARCHAR(150) NOT NULL,
@@ -45,7 +46,7 @@ class SystemDB:
                                 FOREIGN KEY (table_id) REFERENCES restaurant_table(table_id)
                                 )''')
             
-            #Cuisine Table
+            # Cuisine Table
             self.cursor.execute("""
                     CREATE TABLE IF NOT EXISTS Cuisines (
                         id INT PRIMARY KEY AUTO_INCREMENT,
@@ -76,6 +77,26 @@ class SystemDB:
                         FOREIGN KEY (courseID) REFERENCES Courses(id) 
                     ) 
                 """)
+           
+            # Waiter Table
+            self.cursor.execute("""CREATE TABLE IF NOT EXISTS employee(
+                                employee_id INT PRIMARY KEY AUTO_INCREMENT,
+                                employee_name VARCHAR(150) NOT NULL,
+                                tip_recieved FLOAT NOT NULL)""")
+            
+            # Customer Table
+            self.cursor.execute("""CREATE TABLE IF NOT EXISTS customer(
+                                customer_id INT PRIMARY KEY AUTO_INCREMENT,
+                                guest_name VARCHAR(150) NOT NULL,
+                                guest_count INT NOT NULL,
+                                arrived_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)""")
+            
+            # order Table
+            self.cursor.execute("""CREATE TABLE IF NOT EXISTS orders(
+                                order_id INT PRIMARY KEY AUTO_INCREMENT,
+                                FOREIGN KEY (order_id) REFERENCES Cuisines(id),
+                                guest_count INT NOT NULL,
+                                arrived_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)""")
         
             self.connection.commit()
             print("Table is successfully created.")
